@@ -1,15 +1,14 @@
-window.onload = updateInfo();
+window.onload =bartTimes();
 
-function getData(data, callback) {
+function getData(data, callback) { //callback function needed to update DOM after xhr request is made
     var xhr = new XMLHttpRequest();
-    var url = 'http://api.bart.gov/api/etd.aspx?cmd=etd&orig=ashb&key=MW9S-E7SL-26DU-VV8V&json=y';
+    var url = 'http://api.bart.gov/api/etd.aspx?cmd=etd&orig=ashb&key=MW9S-E7SL-26DU-VV8V&json=y';//should make a selection to define value of orig?
 
     xhr.open('GET', url);
     xhr.onload = function() {
         if (xhr.status === 200) {
             data = JSON.parse(xhr.responseText);
-            callback(data);//alert(data.root.station[0].name);
-            //return data;
+            callback(data);
 
         }
         else {
@@ -19,21 +18,35 @@ function getData(data, callback) {
     xhr.send();   
 }
 
-function returnData(data) {
+function updateData(data) {
     alert(data.root.station[0].name);
     var stationName = document.getElementById("stationName");
     stationName.innerHTML = data.root.station[0].name;
+    makeTest(data);
+
 }
 
-function makeTest() {
-    return 10;
+function makeTest(data) {
+    etd = data.root.station[0].etd;
+    etd.forEach(function(element) {
+        destination = element.destination;
+        var createDiv = document.createElement("UL");
+        var textDiv = document.createTextNode(destination);
+        createDiv.appendChild(textDiv);
+        document.getElementById("main").appendChild(createDiv);localStorage
+        
+        element.estimate.forEach(function(element) {
+            var createLi = document.createElement("LI");
+            var textLi = document.createTextNode(element.minutes);
+            createLi.appendChild(textLi);
+            document.getElementById("main").appendChild(createLi);
+        });
+    });
 }
 
-function updateInfo() {
-    test = makeTest();
+function bartTimes() {
     var data = [];
-    alert(test);
-    getData(data, returnData);
+    getData(data, updateData);
 
 
     //alert(data[0]);
